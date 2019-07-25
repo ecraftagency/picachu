@@ -3,12 +3,14 @@ package com.ss.gameLogic.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.ss.gameLogic.model.util.D;
 import com.ss.gameLogic.model.util.Path;
 import com.ss.gameLogic.model.util.PathFinder;
 import com.ss.gameLogic.model.util.Point;
 import com.ss.gameLogic.model.util.SlicePartition;
 import com.ss.gameLogic.model.util.Tuple;
+import com.ss.gameLogic.model.util.Utils;
 import com.ss.gameLogic.objects.BoardConfig;
 
 import java.util.ArrayList;
@@ -52,8 +54,8 @@ public class BoardModel {
         anis[i][j] = new AniModel(indexList.get(num++), i, j);
 
     this.slicePartitions = new Array<SlicePartition>();
-    SlicePartition p1 = new SlicePartition(this.anis, 0, 0, 0, 3);
-    SlicePartition p2 = new SlicePartition(this.anis, 0, 1, 4, 7);
+    SlicePartition p1 = new SlicePartition(this.anis, 1, 1, 0, 8);
+    SlicePartition p2 = new SlicePartition(this.anis, 1, 0, 9, 17);
     slicePartitions.add(p1);
     slicePartitions.add(p2);
   }
@@ -71,6 +73,43 @@ public class BoardModel {
     }
     indexList.shuffle();
     return indexList;
+  }
+
+  public void shuffleBoard() {
+    Array<Integer> ids = new Array<Integer>();
+
+    for (int i = 0; i < row; i++)
+      for (int j = 0; j < col; j++)
+        if (anis[i][j] != null)
+          ids.add(anis[i][j].getId());
+
+    ids.shuffle();
+    int idx = 0;
+
+    for (int i = 0; i < row; i++)
+      for (int j = 0; j < col; j++)
+        if (anis[i][j] != null) {
+          anis[i][j].setId(ids.get(idx++));
+        }
+  }
+
+  public Array<AniModel> findMath() {
+    Array<AniModel> output = new Array<>();
+    for (int i = 0; i < numPair; i++) {
+      Array<AniModel> items = Utils.findItems(anis, i);
+      for (int j = 0; j < items.size - 1; j++)
+        for (int k = j + 1; k < items.size; k++){
+          PathFinder<AniModel> pf = new PathFinder<AniModel>(anis, row, col);
+          AniModel a1 = items.get(j);
+          AniModel a2 = items.get(k);
+          if (pf.findPath(new Point(a1.getRow(), a1.getCol()), new Point(a2.getRow(), a2.getCol()))){
+            output.add(a1);
+            output.add(a2);
+            return output;
+          }
+        }
+    }
+    return output;
   }
 
   public ArrayList<Path> match(AniModel a1, AniModel a2) {
@@ -95,7 +134,6 @@ public class BoardModel {
         anis[m.getRow()][m.getCol()] = null;
         m.setRowCol(m.getRow() + d.dr, m.getCol() + d.dc, d.dr, d.dc);
         anis[m.getRow()][m.getCol()] = m;
-        //m.setRowCol(m.getRow(), m.getCol());
       }
     }
   }

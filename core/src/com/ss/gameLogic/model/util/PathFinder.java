@@ -1,6 +1,7 @@
 package com.ss.gameLogic.model.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
@@ -13,6 +14,18 @@ public class PathFinder<T> {
   public void printPath() {
     for (int i = 0; i < path.size(); i++)
       Gdx.app.log("line 1: ", path.get(i).toString());
+  }
+
+  private void correctPath() {
+    Array<Path> removes = new Array<>();
+    for (int i = 0; i < path.size(); i++) {
+      Point d = path.get(i).dt;
+      if (d.c == 0 && d.r == 0)
+        removes.add(path.get(i));
+    }
+
+    for (int i = 0; i < removes.size; i++)
+      path.remove(removes.get(i));
   }
 
   public PathFinder(T[][] a, int _r, int _c) {
@@ -43,18 +56,28 @@ public class PathFinder<T> {
     if (tp1.c == tp2.c)
       if (checkLineCol(tp1.r, tp2.r, tp1.c))
         return true;
-    if (checkRectRow(tp1, tp2))
+    if (checkRectRow(tp1, tp2)) {
       return true;
-    if (checkRectCol(tp1,tp2))
+    }
+    if (checkRectCol(tp1,tp2)) {
       return true;
-    if (checkMoreLineRow(tp1, tp2, 1))
+    }
+    if (checkMoreLineRow(tp1, tp2, 1)) {
+      correctPath();
       return true;
-    if (checkMoreLineRow(tp1, tp2, -1))
+    }
+    if (checkMoreLineRow(tp1, tp2, -1)) {
+      correctPath();
       return true;
-    if (checkMoreLineCol(tp1, tp2, 1))
+    }
+    if (checkMoreLineCol(tp1, tp2, 1)) {
+      correctPath();
       return true;
-    if (checkMoreLineCol(tp1, tp2, -1))
+    }
+    if (checkMoreLineCol(tp1, tp2, -1)) {
+      correctPath();
       return true;
+    }
 
     return false;
   }
@@ -114,7 +137,7 @@ public class PathFinder<T> {
     if (checkLineRow(pmin.c, pmax.c, r))
       while (c < arr[0].length && arr[pmin.r][c] != 1 && arr[pmax.r][c] != 1){
         if (this.checkLineCol(pmin.r, pmax.r, c)) {
-          Path d = path.get(path.size() - 1);
+          Path d = path.remove(path.size() - 1);
           if (d != null){
             Path pt1 = new Path(new Point(p1.r-1,p1.c-1), new Point(0,direction*Math.abs(p1.c-1 - d.sp.c)));
             Path pt2 = new Path(new Point(p2.r - 1, p2.c-1), new Point(0,direction*Math.abs(p2.c-1 - d.sp.c)));
@@ -137,7 +160,7 @@ public class PathFinder<T> {
     if (checkLineCol(pmin.r, pmax.r, c))
       while (r < arr.length && arr[r][pmin.c] != 1 && arr[r][pmax.c] != 1) {
         if (checkLineRow(pmin.c, pmax.c, r)) {
-          Path d = path.get(path.size() - 1);
+          Path d = path.remove(path.size() - 1);
           if (d != null) {
             Path pt1 = new Path(new Point(p1.r-1,p1.c-1), new Point(direction*Math.abs(p1.r-1 - d.sp.r), 0));
             Path pt2 = new Path(new Point(p2.r-1,p2.c-1), new Point(direction*Math.abs(p2.r-1 - d.sp.r), 0));

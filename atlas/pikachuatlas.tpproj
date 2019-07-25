@@ -37,11 +37,11 @@ inputFiles=[{path:menu,type:Input,dirFilePrefix:null,recursive:true,flattenPaths
 
 ---
 
-name=play
-filename=
+name=particleatlas1
+filename=particleatlas1.atlas
 output=../android/assets/textureAtlas
 
-alias=true
+alias=false
 alphaThreshold=0
 debug=false
 duplicatePadding=false
@@ -68,10 +68,49 @@ grid=false
 square=false
 bleed=true
 limitMemory=true
-useIndexes=true
+useIndexes=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:play,type:Input,dirFilePrefix:null,recursive:true,flattenPaths:false}]
+inputFiles=[{path:particleatlas1,type:Input,dirFilePrefix:null,recursive:false,flattenPaths:false}]
+
+
+---
+
+name=play
+filename=
+output=../android/assets/textureAtlas
+
+alias=false
+alphaThreshold=0
+debug=false
+duplicatePadding=false
+edgePadding=true
+fast=false
+filterMag=Nearest
+filterMin=Nearest
+ignoreBlankImages=true
+maxHeight=2048
+maxWidth=2048
+minHeight=16
+minWidth=16
+paddingX=2
+paddingY=2
+pot=true
+mof=false
+rotation=false
+stripWhitespaceX=false
+stripWhitespaceY=false
+wrapX=ClampToEdge
+wrapY=ClampToEdge
+premultiplyAlpha=false
+grid=false
+square=false
+bleed=true
+limitMemory=true
+useIndexes=false
+
+scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
+inputFiles=[{path:play,type:Input,dirFilePrefix:null,recursive:true,flattenPaths:false},{path:play/bar.png,type:Input,regionName:null}]
 
 
 -PROJ-

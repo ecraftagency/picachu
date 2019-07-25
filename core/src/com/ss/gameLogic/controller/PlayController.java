@@ -5,11 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Array;
 import com.ss.core.action.exAction.GSimpleAction;
 import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.util.GLayer;
 import com.ss.core.util.GLayerGroup;
 import com.ss.core.util.GStage;
+import com.ss.gameLogic.model.AniModel;
 import com.ss.gameLogic.model.BoardModel;
 import com.ss.gameLogic.model.util.Path;
 import com.ss.gameLogic.objects.AniView;
@@ -25,11 +27,13 @@ public class PlayController implements IBoardEvent {
   private BoardView boardView;
   private AniView selected = null;
   public static PlayController instance = new PlayController();
+  private float playTime; //second
 
   public void init(GPlay screen) {
     this.screen = screen;
     this.playGroup = new GLayerGroup();
     GStage.addToLayer(GLayer.ui, instance.playGroup);
+    initTimer(10);
   }
 
   public void pause() {
@@ -52,6 +56,41 @@ public class PlayController implements IBoardEvent {
         return true;
       }
     }));
+  }
+
+  public void getHint() {
+    Array<AniModel> nextMatch = BoardModel.getLastBoardModel().findMath();
+    if (nextMatch.size == 2){
+      AniModel a1 = nextMatch.get(0);
+      AniModel a2 = nextMatch.get(1);
+      a1.setHighLight(true);
+      a2.setHighLight(true);
+    }
+  }
+
+  public void shuffle() {
+    BoardModel.getLastBoardModel().shuffleBoard();
+  }
+
+  private void initTimer(float plt) {
+    this.playTime = plt;
+    playGroup.addAction(GSimpleAction.simpleAction(new GSimpleAction.ActInterface() {
+      @Override
+      public boolean act(float dt, Actor actor) {
+        playTime -= dt; //0.0016
+        if (playTime <= 0) {
+          timeOut();
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+    }));
+  }
+
+  public void timeOut() {
+    Gdx.app.log("het gio choi", "");
   }
 
   public void resume() {
@@ -82,27 +121,36 @@ public class PlayController implements IBoardEvent {
   public void AniSelect(AniView ani) {
     if (selected == null) {
       selected = ani;
-      ani.highlight(true);
+      ani.select(true);
     }
     else {
       ArrayList<Path> path = BoardModel.getLastBoardModel().match(selected.getModel(), ani.getModel());
       if (path!=null) {
         BoardModel.getLastBoardModel().removeAni(ani.getModel().getRow(), ani.getModel().getCol());
         BoardModel.getLastBoardModel().removeAni(selected.getModel().getRow(), selected.getModel().getCol());
-        ani.destroy();
-        selected.destroy();
-        BoardModel.saveData();
+        boardView.removeAni(ani);
+        boardView.removeAni(selected);
         animationPath(path);
 
         BoardModel.getLastBoardModel().nullSlice(ani.getModel());
-        BoardModel.getLastBoardModel().nullSlice(selected.getModel());
+        BoardModel.getLastBoardModel().nullSlice(selected.getModel()); //0.7s
+
+        Array<AniModel> nextMatch = BoardModel.getLastBoardModel().findMath();
+        if (nextMatch.size == 0)
+          BoardModel.getLastBoardModel().shuffleBoard(); // 0.7 + ..
+
+        BoardModel.saveData();
         selected = null;
       }
       else {
-        selected.highlight(false);
-        ani.highlight(true);
+        selected.select(false);
+        ani.select(true);
         selected = ani;
       }
     }
+  }
+
+  public float getTime() {
+    return this.playTime;
   }
 }

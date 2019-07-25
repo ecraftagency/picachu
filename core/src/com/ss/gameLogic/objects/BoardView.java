@@ -1,5 +1,6 @@
 package com.ss.gameLogic.objects;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.ss.GMain;
 import com.ss.core.action.exAction.GSimpleAction;
@@ -17,12 +19,55 @@ import com.ss.gameLogic.model.BoardModel;
 public class BoardView extends Group {
   private AniView[][] anis;
 
+
   private BoardModel model;
 
   public BoardView() {
 
   }
 
+  private void zIndexAniList(){
+    int c = 0;
+    for(int i=0;i<model.getCol();i++){
+      for(int j=0;j<model.getRow();j++){
+        if(anis[j][i]!=null) anis[j][i].setZIndex(c++);
+      }
+    }
+  }
+  private void initAniView(final AniView aniView, final IBoardEvent listener) {
+    aniView.addListener(new ClickListener(){
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+        if(listener !=null)
+          listener.AniSelect(aniView);
+      }
+    });
+
+    aniView.getModel().registerDataChange(new AniModel.DataChangeEvent() {
+      @Override
+      public void OnRowColChange(final int newRow, final int newCol, int dr, int dc) {
+        final float toX = newCol * AniView.ANIWIDTH;
+        final float toY = newRow * AniView.ANIHEIGHT;
+        anis[newRow][newCol] = aniView;
+        zIndexAniList();
+        aniView.addAction(Actions.moveTo(toX, toY, 0.5f, Interpolation.swing));
+
+      }
+
+      @Override
+      public void OnIdChange() {
+        aniView.addAction(Actions.sequence(
+                Actions.run(() -> {
+                  aniView.changeTexture();
+                })));
+      }
+
+      @Override
+      public void OnHighlightChange() {
+        aniView.hint();
+      }
+    });
+  }
   public void animationNewGame(BoardModel model, final IBoardEvent listener, GSimpleAction animationFinished ){
     this.model = model;
     centerBoard();
@@ -30,82 +75,25 @@ public class BoardView extends Group {
 
     AniView lastAniView = null;
     for (int i = 0; i < model.getRow(); i++) {
-      float dt = 0.3f;
       for (int j = 0; j < model.getCol(); j++) {
         final AniView ani = new AniView(this.model.getAniModel(i, j));
         anis[i][j] = ani;
+        initAniView(ani, listener);
         float toX = j*AniView.ANIWIDTH;
         float toY = i*AniView.ANIHEIGHT;
-        ani.addListener(new ClickListener(){
-          @Override
-          public void clicked(InputEvent event, float x, float y) {
-            if(listener !=null)
-              listener.AniSelect(ani);
-          }
-        });
+        ani.setPosition( toX, toY - MathUtils.random(300,1000));
+        ani.addAction(Actions.moveTo(toX, toY, 1f, Interpolation.swing));
 
-        anis[i][j].setPosition( toX, toY /*- MathUtils.random(300,1000)*/);
-        dt += 0.05f;
         this.addActor(ani);
-        lastAniView = anis[i][j];
-
-        ani.getModel().registerRowCowChange(new AniModel.RowColChangeEvent() {
-          @Override
-          public void OnChange(final int newRow, final int newCol, int dr, int dc) {
-            final float toX = newCol*AniView.ANIWIDTH;
-            final float toY = newRow*AniView.ANIHEIGHT;
-            final int z = (ani.getModel().getRow()*18 + ani.getModel().getCol())*200;
-            ani.addAction(Actions.sequence(
-                    Actions.delay(0.2f),
-                    Actions.moveTo(toX, toY, 0.3f, Interpolation.swingOut),
-                    Actions.run(new Runnable() {
-                      @Override
-                      public void run() {
-                          ani.setZIndex(z);
-                      }
-                    })));
-          }
-        });
-
-        addPaddingActor();
+        lastAniView = ani;
       }
     }
     lastAniView.addAction(animationFinished);
+    zIndexAniList();
   }
 
-
   public void animationResumeGame(BoardModel model, final IBoardEvent listener, GSimpleAction animationFinished ){
-    this.model = model;
-    centerBoard();
-    anis = new AniView[model.getRow()][model.getCol()];
 
-    AniView lastAniView = null;
-    for (int i = 0; i < model.getRow(); i++) {
-      float dt = 0.3f;
-      for (int j = 0; j < model.getCol(); j++) {
-        if(this.model.getAniModel(i,j) != null) {
-          final AniView ani = new AniView(this.model.getAniModel(i, j));
-          anis[i][j] = ani;
-          float toX = j * AniView.ANIWIDTH;
-          float toY = i * AniView.ANIHEIGHT;
-          ani.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-              if (listener != null)
-                listener.AniSelect(ani);
-            }
-          });
-
-          anis[i][j].setPosition(toX  -MathUtils.random(300, 1000), toY );
-          anis[i][j].addAction(Actions.moveTo(toX, toY, dt, Interpolation.swing));
-          dt += 0.05f;
-          this.addActor(anis[i][j]);
-          lastAniView = anis[i][j];
-        }
-      }
-    }
-    if(lastAniView!=null)
-      lastAniView.addAction(animationFinished);
   }
 
 
@@ -130,8 +118,8 @@ public class BoardView extends Group {
     return AniView.ANIHEIGHT*model.getRow();
   }
 
-  public void addPaddingActor() {
-    for (int i = 0; i < 200; i++)
-      addActor(new Actor());
+  public void removeAni(AniView ani) {
+    anis[ani.getModel().getRow()][ani.getModel().getCol()] = null;
+    ani.destroy();
   }
 }

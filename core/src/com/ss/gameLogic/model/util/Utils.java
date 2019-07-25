@@ -1,6 +1,7 @@
 package com.ss.gameLogic.model.util;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
@@ -48,6 +49,17 @@ public class Utils {
       return nullSliceH(input, output, anchor, range);
     else
       return nullSliceV(input, output, anchor, range);
+  }
+
+  public static <X> Array<X> findItems(X[][] input, int id) {
+    Array<X> output = new Array<>();
+    String sid = id + "";
+    for (int i = 0; i < input.length; i++)
+      for (int j = 0; j < input[0].length; j++)
+        if (input[i][j] != null && input[i][j].toString().equals(sid))
+          output.add(input[i][j]);
+
+    return output;
   }
 }
 
