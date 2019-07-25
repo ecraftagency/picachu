@@ -1,4 +1,4 @@
-package com.ss.gameLogic.model;
+package com.ss.gameLogic.model.util;
 
 import com.badlogic.gdx.Gdx;
 
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class PathFinder<T> {
   private int row = 0;
   private int col = 0;
-  ArrayList<Path> path;
+  public ArrayList<Path> path;
   private int[][] arr;
 
   public void printPath() {

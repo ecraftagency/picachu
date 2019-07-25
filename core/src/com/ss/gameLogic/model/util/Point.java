@@ -1,4 +1,4 @@
-package com.ss.gameLogic.model;
+package com.ss.gameLogic.model.util;
 
 public class Point {
   public int r = 0;

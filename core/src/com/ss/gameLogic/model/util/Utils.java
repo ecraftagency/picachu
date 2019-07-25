@@ -1,4 +1,4 @@
-package com.ss.gameLogic.model;
+package com.ss.gameLogic.model.util;
 
 import com.badlogic.gdx.math.Vector2;
 

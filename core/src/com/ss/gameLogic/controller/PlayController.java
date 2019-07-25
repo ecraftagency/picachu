@@ -5,20 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.utils.Align;
-import com.ss.GMain;
 import com.ss.core.action.exAction.GSimpleAction;
 import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.util.GLayer;
 import com.ss.core.util.GLayerGroup;
-import com.ss.core.util.GScreen;
 import com.ss.core.util.GStage;
-import com.ss.gameLogic.model.AniModel;
 import com.ss.gameLogic.model.BoardModel;
-import com.ss.gameLogic.model.D;
-import com.ss.gameLogic.model.Path;
-import com.ss.gameLogic.model.PathFinder;
-import com.ss.gameLogic.model.Tuple;
+import com.ss.gameLogic.model.util.Path;
 import com.ss.gameLogic.objects.AniView;
 import com.ss.gameLogic.objects.BoardConfig;
 import com.ss.gameLogic.objects.BoardView;
@@ -100,8 +93,10 @@ public class PlayController implements IBoardEvent {
         selected.destroy();
         BoardModel.saveData();
         animationPath(path);
-        BoardModel.getLastBoardModel().nullSlice(ani.getModel().getCol());
-        BoardModel.getLastBoardModel().nullSlice(selected.getModel().getCol());
+
+        BoardModel.getLastBoardModel().nullSlice(ani.getModel());
+        BoardModel.getLastBoardModel().nullSlice(selected.getModel());
+        selected = null;
       }
       else {
         selected.highlight(false);

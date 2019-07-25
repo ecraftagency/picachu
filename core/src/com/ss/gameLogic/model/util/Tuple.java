@@ -1,4 +1,4 @@
-package com.ss.gameLogic.model;
+package com.ss.gameLogic.model.util;
 
 public class Tuple<X, Y> {
   public X obj;

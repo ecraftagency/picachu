@@ -36,11 +36,11 @@ public class AniModel {
     this.id = id;
   }
 
-  public void setRowCol(int row, int col){
+  public void setRowCol(int row, int col, int dr, int dc){
     this.row = row;
     this.col = col;
     if(rowColChangeListener!=null)
-      rowColChangeListener.OnChange(this.row, this.col);
+      rowColChangeListener.OnChange(this.row, this.col,dr,dc);
   }
 
   public void registerRowCowChange(RowColChangeEvent listener){
@@ -48,8 +48,6 @@ public class AniModel {
   }
 
   public interface RowColChangeEvent{
-    public void OnChange(int newRow, int newCol);
+    public void OnChange(int newRow, int newCol, int dr, int dc);
   }
-
-
 }

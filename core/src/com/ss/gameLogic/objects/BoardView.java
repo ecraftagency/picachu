@@ -1,9 +1,7 @@
 package com.ss.gameLogic.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,20 +13,14 @@ import com.ss.core.action.exAction.GSimpleAction;
 import com.ss.gameLogic.controller.IBoardEvent;
 import com.ss.gameLogic.model.AniModel;
 import com.ss.gameLogic.model.BoardModel;
-import com.ss.gameLogic.model.D;
-import com.ss.gameLogic.model.Tuple;
-import com.ss.gameLogic.model.Utils;
-
-import java.util.ArrayList;
 
 public class BoardView extends Group {
   private AniView[][] anis;
 
-  private AniView selected = null;
-
   private BoardModel model;
 
   public BoardView() {
+
   }
 
   public void animationNewGame(BoardModel model, final IBoardEvent listener, GSimpleAction animationFinished ){
@@ -52,48 +44,30 @@ public class BoardView extends Group {
           }
         });
 
-
-
         anis[i][j].setPosition( toX, toY /*- MathUtils.random(300,1000)*/);
-        //anis[i][j].addAction(Actions.moveTo(toX, toY, dt, Interpolation.swing));
         dt += 0.05f;
-        //int zindex = (int)((j+1)*100-i);
-        //Gdx.app.log("test", "test " +zindex );
-
         this.addActor(ani);
-        ani.updateZIndex();
-        //ani.setZIndex(100000 - ani.getModel().getRow() - 100*ani.getModel().getCol());
-        //ani.setZIndex()
-        //this.addActorAt(zindex, anis[i][j]);
         lastAniView = anis[i][j];
-
 
         ani.getModel().registerRowCowChange(new AniModel.RowColChangeEvent() {
           @Override
-          public void OnChange(final int newRow, final int newCol) {
+          public void OnChange(final int newRow, final int newCol, int dr, int dc) {
             final float toX = newCol*AniView.ANIWIDTH;
             final float toY = newRow*AniView.ANIHEIGHT;
-            ani.setPosition(toX, toY);
-            ani.updateZIndex();
-            //int zindex = (int)(100000 - newRow - newCol*100);
-           // ani.setZIndex(zindex);
-//
-//            ani.addAction(Actions.sequence( Actions.moveTo(toX, toY, 0.5f, Interpolation.swing), GSimpleAction.simpleAction(new GSimpleAction.ActInterface() {
-//              @Override
-//              public boolean act(float var1, Actor var2) {
-//                //ani.setZIndex((int)(1000000+toY*1000-toX));
-//                int zindex = (int)(100000-(newCol*newRow));
-//                ani.setZIndex(zindex);
-//                Gdx.app.log("test", "test");
-//                return true;
-//              }
-//            })));
-
-
-            //ani.setZIndex(newRow*100+newCol);
-            //ani.setZIndex(1000-newCol*newRow);
+            final int z = (ani.getModel().getRow()*18 + ani.getModel().getCol())*200;
+            ani.addAction(Actions.sequence(
+                    Actions.delay(0.2f),
+                    Actions.moveTo(toX, toY, 0.3f, Interpolation.swingOut),
+                    Actions.run(new Runnable() {
+                      @Override
+                      public void run() {
+                          ani.setZIndex(z);
+                      }
+                    })));
           }
         });
+
+        addPaddingActor();
       }
     }
     lastAniView.addAction(animationFinished);
@@ -156,27 +130,8 @@ public class BoardView extends Group {
     return AniView.ANIHEIGHT*model.getRow();
   }
 
-  public void nullSlice(ArrayList<Tuple<AniModel, D>> slices) {
-    for (Tuple<AniModel, D> slice : slices) {
-      AniModel aniM = slice.obj;
-      AniView aniV = anis[aniM.getRow()][aniM.getCol()];
-      aniV.addAction(Actions.moveTo(slice.delta.dc * AniView.ANIWIDTH, slice.delta.dr * AniView.ANIWIDTH, 0.4f));
-    }
+  public void addPaddingActor() {
+    for (int i = 0; i < 200; i++)
+      addActor(new Actor());
   }
-
-//  private void animalSelect(AniView ani) {
-//    if (selected == null) {
-//      selected = ani;
-//    }
-//    else {
-//      if (ani.id == selected.id) {
-//        this.removeActor(selected);
-//        this.removeActor(ani);
-//        selected = null;
-//      }
-//      else {
-//        selected = ani;
-//      }
-//    }
-//  }
 }
