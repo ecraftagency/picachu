@@ -3,7 +3,6 @@ package com.ss.gameLogic.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Timer;
 import com.ss.gameLogic.model.util.D;
 import com.ss.gameLogic.model.util.Path;
 import com.ss.gameLogic.model.util.PathFinder;
@@ -41,9 +40,8 @@ public class BoardModel {
   public static BoardModel getSaveBoard(){
     return null;
   }
-  public static BoardModel getLastBoardModel(){
-    return currentBoardModel;
-  }
+  public static BoardModel getLastBoardModel(){ return currentBoardModel; }
+  public AniModel[][] getArray() {return anis;}
 
   public void newBoard() {
     Array<Integer> indexList = initBoard();
@@ -53,11 +51,6 @@ public class BoardModel {
       for (int j = 0; j < col; j++)
         anis[i][j] = new AniModel(indexList.get(num++), i, j);
 
-    this.slicePartitions = new Array<SlicePartition>();
-    SlicePartition p1 = new SlicePartition(this.anis, 1, 1, 0, 8);
-    SlicePartition p2 = new SlicePartition(this.anis, 1, 0, 9, 17);
-    slicePartitions.add(p1);
-    slicePartitions.add(p2);
   }
 
   private Array<Integer> initBoard() {
@@ -124,7 +117,7 @@ public class BoardModel {
   }
 
   public void nullSlice(AniModel ani) {
-    for (SlicePartition sp : this.slicePartitions) {
+    for (SlicePartition sp : SlicePartition.instances) {
       ArrayList<Tuple<AniModel, D>> slices = sp.calcSlices(ani);
 
       for (int i = slices.size() - 1; i >= 0; i--) {
@@ -136,15 +129,6 @@ public class BoardModel {
         anis[m.getRow()][m.getCol()] = m;
       }
     }
-  }
-
-
-  public void resumeBoard(int[][] data){
-    for (int i = 0; i < row; i++)
-      for (int j = 0; j < col; j++)
-        if(data[i][j]!=-1)
-          anis[i][j] = new AniModel(data[i][j], i, j);
-        else anis[i][j] = null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,5 +174,13 @@ public class BoardModel {
       currentBoardModel = null;
     }
     return null;
+  }
+
+  public void resumeBoard(int[][] data){
+    for (int i = 0; i < row; i++)
+      for (int j = 0; j < col; j++)
+        if(data[i][j]!=-1)
+          anis[i][j] = new AniModel(data[i][j], i, j);
+        else anis[i][j] = null;
   }
 }

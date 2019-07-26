@@ -654,3 +654,53 @@ user3boom.p  ___  1 / 1
 fireball_boom.p  ___  1 / 1
 selected2.p  ___  0 / 1
 selected5.p  ___  0 / 1
+
+_________GParticleSystem__________
+
+baozou2p.p  ___  1 / 1
+baozou3p.p  ___  1 / 1
+baozou1p.p  ___  1 / 1
+user3boom.p  ___  1 / 1
+fireball_boom.p  ___  1 / 1
+selected2.p  ___  0 / 1
+selected5.p  ___  0 / 1
+
+_________GParticleSystem__________
+
+baozou2p.p  ___  1 / 1
+baozou3p.p  ___  1 / 1
+baozou1p.p  ___  1 / 1
+user3boom.p  ___  1 / 1
+fireball_boom.p  ___  1 / 1
+selected2.p  ___  0 / 1
+selected5.p  ___  0 / 1
+
+_________GParticleSystem__________
+
+baozou2p.p  ___  1 / 1
+baozou3p.p  ___  1 / 1
+baozou1p.p  ___  1 / 1
+user3boom.p  ___  1 / 1
+fireball_boom.p  ___  1 / 1
+selected2.p  ___  0 / 1
+selected5.p  ___  0 / 1
+
+_________GParticleSystem__________
+
+baozou2p.p  ___  1 / 1
+baozou3p.p  ___  1 / 1
+baozou1p.p  ___  1 / 1
+user3boom.p  ___  1 / 1
+fireball_boom.p  ___  1 / 1
+selected2.p  ___  0 / 1
+selected5.p  ___  0 / 1
+
+_________GParticleSystem__________
+
+baozou2p.p  ___  1 / 1
+baozou3p.p  ___  1 / 1
+baozou1p.p  ___  1 / 1
+user3boom.p  ___  1 / 1
+fireball_boom.p  ___  1 / 1
+selected2.p  ___  0 / 1
+selected5.p  ___  0 / 1

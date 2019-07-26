@@ -110,7 +110,7 @@ limitMemory=true
 useIndexes=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:play,type:Input,dirFilePrefix:null,recursive:true,flattenPaths:false},{path:play/bar.png,type:Input,regionName:null}]
+inputFiles=[{path:play,type:Input,dirFilePrefix:null,recursive:true,flattenPaths:false},{path:play/bar.png,type:Input,regionName:null},{path:play/barframe.png,type:Input,regionName:null}]
 
 
 -PROJ-

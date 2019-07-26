@@ -1,11 +1,8 @@
 package com.ss.gameLogic.scene.ui;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.ss.GMain;
 import com.ss.core.action.exAction.GSimpleAction;
 import com.ss.core.util.GClipGroup;
-import com.ss.core.util.GUI;
 
 public class TimeBar extends GClipGroup {
   Image bar;

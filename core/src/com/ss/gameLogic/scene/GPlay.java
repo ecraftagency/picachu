@@ -1,8 +1,6 @@
 package com.ss.gameLogic.scene;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -10,11 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.ss.GMain;
-import com.ss.core.action.exAction.GSimpleAction;
 import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.exSprite.particle.GParticleSystem;
 import com.ss.core.util.GAssetsManager;
-import com.ss.core.util.GClipGroup;
 import com.ss.core.util.GLayer;
 import com.ss.core.util.GScreen;
 import com.ss.core.util.GStage;
@@ -27,6 +23,7 @@ public class GPlay extends GScreen {
     TextureAtlas playAtlas;
     Group playGroup;
     Group pauseGroup;
+    private int currentLevel = 7;
 
     @Override
     public void dispose() {
@@ -107,12 +104,14 @@ public class GPlay extends GScreen {
     public void init() {
         playAtlas = GAssetsManager.getTextureAtlas("play.atlas");
         AniView.textures = playAtlas;
-
         initUi();
         initParticle();
-
         PlayController.instance.init(this);
-        PlayController.instance.newGame();
+        startGame(currentLevel);
+    }
+
+    private void startGame(int level) {
+        PlayController.instance.newGame(level);
         initTimebar();
     }
 
@@ -122,9 +121,16 @@ public class GPlay extends GScreen {
     }
 
     private void initTimebar() {
+        Image barframe = GUI.createImage(playAtlas, "barframe");
+        barframe.setPosition(GMain.screenWidth/2 - barframe.getWidth()/2, 5);
+        playGroup.addActor(barframe);
         Image bar = GUI.createImage(playAtlas, "bar");
-        TimeBar timeBar = new TimeBar(bar, PlayController.instance.getTime(),null);
+        TimeBar timeBar = new TimeBar(bar, PlayController.instance.getTime(),this::timeout);
         timeBar.setPosition(GMain.screenWidth/2 - bar.getWidth()/2,10);
         playGroup.addActor(timeBar);
+    }
+
+    private void timeout() {
+
     }
 }

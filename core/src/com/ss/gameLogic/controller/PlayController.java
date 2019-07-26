@@ -11,11 +11,12 @@ import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.util.GLayer;
 import com.ss.core.util.GLayerGroup;
 import com.ss.core.util.GStage;
+import com.ss.gameLogic.data.Level;
 import com.ss.gameLogic.model.AniModel;
 import com.ss.gameLogic.model.BoardModel;
 import com.ss.gameLogic.model.util.Path;
+import com.ss.gameLogic.model.util.SlicePartition;
 import com.ss.gameLogic.objects.AniView;
-import com.ss.gameLogic.objects.BoardConfig;
 import com.ss.gameLogic.objects.BoardView;
 import com.ss.gameLogic.scene.GPlay;
 
@@ -28,6 +29,7 @@ public class PlayController implements IBoardEvent {
   private AniView selected = null;
   public static PlayController instance = new PlayController();
   private float playTime; //second
+  private int level;
 
   public void init(GPlay screen) {
     this.screen = screen;
@@ -40,8 +42,9 @@ public class PlayController implements IBoardEvent {
 
   }
 
-  public void newGame() {
-    BoardModel bmodel = new BoardModel(BoardConfig.row, BoardConfig.col, BoardConfig.pair);
+  public void newGame(int level) {
+    Level lv = Level.getLevelData(level);
+    BoardModel bmodel = new BoardModel(lv.row, lv.col, lv.numPair);
     bmodel.newBoard();
 
     boardView = new BoardView();
@@ -56,6 +59,8 @@ public class PlayController implements IBoardEvent {
         return true;
       }
     }));
+
+    SlicePartition.initPartitions(level, bmodel.getArray());
   }
 
   public void getHint() {

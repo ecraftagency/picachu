@@ -1,22 +1,58 @@
 package com.ss.gameLogic.model.util;
 
+import com.badlogic.gdx.utils.Array;
+import com.ss.gameLogic.data.Level;
 import com.ss.gameLogic.model.AniModel;
 
 import java.util.ArrayList;
 
 public class SlicePartition {
-  public int sliceAnchor; // 0 - slice ve 0 | 1 slice ve cuoi
+  public static Array<SlicePartition> instances = new Array<>();
 
-  // 0 - slice ngang | 1 - slice dung
-  // 0 -> partition row | 1 -> partition col
-  // 0 -> nullSliceH    | 1 -> nullsliceV
-  public int sliceDirection;
+  public static void initPartitions(int level, AniModel[][] array) {
+    Level lv = Level.getLevelData(level);
+    if (level == 0)
+      return;
+    instances = new Array<SlicePartition>();
 
-  public int start;
+    if (lv.nPartition == 1) {
+      SlicePartition p1 = new SlicePartition(array, lv.sliceDirection, lv.sliceAnchor, 0, array.length - 1);
+      instances.add(p1);
+    }
+    else if (lv.nPartition == 2) {
+      if (array.length < 4 || array[0].length < 4)
+        return;
+      if (lv.sliceDirection == 0) { // vertical slice
+        int anchor1 = lv.sliceAnchor;
+        int anchor2 = (anchor1 == 0) ? 1 : 0;
+        int e = (array.length % 2 == 0) ? array.length/2 - 1 : array.length/2;
+        int s = (array.length % 2 == 0) ? array.length/2 : array.length/2 + 1;
+        SlicePartition p1 = new SlicePartition(array, lv.sliceDirection, anchor1, 0, e);
+        SlicePartition p2 = new SlicePartition(array, lv.sliceDirection, anchor2, s, array.length - 1);
+        instances.add(p1);
+        instances.add(p2);
+      }
+      else if (lv.sliceDirection == 1) { //horizon slice
+        int anchor1 = lv.sliceAnchor;
+        int anchor2 = (anchor1 == 0) ? 1 : 0;
+        int e = (array[0].length % 2 == 0) ? array[0].length/2 - 1 : array[0].length/2;
+        int s = (array[0].length % 2 == 0) ? array[0].length/2 : array[0].length/2 + 1;
+        SlicePartition p1 = new SlicePartition(array, lv.sliceDirection, anchor1, 0, e);
+        SlicePartition p2 = new SlicePartition(array, lv.sliceDirection, anchor2, s, array[0].length - 1);
+        instances.add(p1);
+        instances.add(p2);
+      }
+    }
+  }
+
+  private int sliceAnchor;
+  private int sliceDirection;
+
+  private int start;
   public int end;
-  AniModel[][] anis;
+  private AniModel[][] anis;
 
-  public SlicePartition(AniModel[][] anis, int sliceDirection, int sliceAnchor, int start, int end) {
+  private SlicePartition(AniModel[][] anis, int sliceDirection, int sliceAnchor, int start, int end) {
     this.sliceDirection = sliceDirection;
     this.sliceAnchor = sliceAnchor;
     this.start = start;
