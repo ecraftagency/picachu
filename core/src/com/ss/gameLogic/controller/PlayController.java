@@ -38,8 +38,8 @@ public class PlayController implements IBoardEvent {
     initTimer(10);
   }
 
-  public void pause() {
-    playGroup.setPause(true);
+  public void pause(boolean pause) {
+    playGroup.setPause(pause);
   }
 
   public void newGame(int level) {

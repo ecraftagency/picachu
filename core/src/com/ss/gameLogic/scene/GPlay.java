@@ -97,10 +97,12 @@ public class GPlay extends GScreen {
             public void clicked (InputEvent event, float x, float y) {
                 pauseGroup.remove();
                 pauseGroup = null;
+                uiGroup.setPause(false);
+                PlayController.instance.pause(false);
             }
         });
         uiGroup.setPause(true);
-        PlayController.instance.pause();
+        PlayController.instance.pause(true);
     }
 
     @Override
