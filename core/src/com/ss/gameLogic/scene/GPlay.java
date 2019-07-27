@@ -12,6 +12,7 @@ import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.exSprite.particle.GParticleSystem;
 import com.ss.core.util.GAssetsManager;
 import com.ss.core.util.GLayer;
+import com.ss.core.util.GLayerGroup;
 import com.ss.core.util.GScreen;
 import com.ss.core.util.GStage;
 import com.ss.core.util.GUI;
@@ -21,9 +22,9 @@ import com.ss.gameLogic.scene.ui.TimeBar;
 
 public class GPlay extends GScreen {
     TextureAtlas playAtlas;
-    Group playGroup;
+    GLayerGroup uiGroup;
     Group pauseGroup;
-    private int currentLevel = 7;
+    private int currentLevel = 0; //pref
 
     @Override
     public void dispose() {
@@ -41,14 +42,14 @@ public class GPlay extends GScreen {
     }
 
     private void initUi(){
-        playGroup = new Group();
-        GStage.addToLayer(GLayer.ui, playGroup);
+        uiGroup = new GLayerGroup();
+        GStage.addToLayer(GLayer.ui, uiGroup);
 
         Image bg = GUI.createImage(playAtlas, "bg");
-        playGroup.addActor(bg);
+        uiGroup.addActor(bg);
 
         Button btn_pause = GUI.creatButton(playAtlas, "btn_pause");
-        playGroup.addActor(btn_pause);
+        uiGroup.addActor(btn_pause);
 
         btn_pause.setPosition(GMain.screenWidth-btn_pause.getWidth(), 0);
         btn_pause.addListener(new ClickListener(){
@@ -64,7 +65,7 @@ public class GPlay extends GScreen {
             }
         });
 
-        playGroup.addActor(btn_hint);
+        uiGroup.addActor(btn_hint);
 
         Button btn_swap = GUI.creatButton(playAtlas, "btn_random");
         btn_swap.addListener(new ClickListener() {
@@ -72,7 +73,7 @@ public class GPlay extends GScreen {
                 PlayController.instance.shuffle();
             }
         });
-        playGroup.addActor(btn_swap);
+        uiGroup.addActor(btn_swap);
         btn_swap.setPosition(btn_hint.getX() + btn_hint.getWidth() + 4, btn_hint.getY());
     }
 
@@ -98,6 +99,8 @@ public class GPlay extends GScreen {
                 pauseGroup = null;
             }
         });
+        uiGroup.setPause(true);
+        PlayController.instance.pause();
     }
 
     @Override
@@ -123,11 +126,11 @@ public class GPlay extends GScreen {
     private void initTimebar() {
         Image barframe = GUI.createImage(playAtlas, "barframe");
         barframe.setPosition(GMain.screenWidth/2 - barframe.getWidth()/2, 5);
-        playGroup.addActor(barframe);
+        uiGroup.addActor(barframe);
         Image bar = GUI.createImage(playAtlas, "bar");
         TimeBar timeBar = new TimeBar(bar, PlayController.instance.getTime(),this::timeout);
         timeBar.setPosition(GMain.screenWidth/2 - bar.getWidth()/2,10);
-        playGroup.addActor(timeBar);
+        uiGroup.addActor(timeBar);
     }
 
     private void timeout() {

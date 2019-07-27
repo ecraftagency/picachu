@@ -39,7 +39,7 @@ public class PlayController implements IBoardEvent {
   }
 
   public void pause() {
-
+    playGroup.setPause(true);
   }
 
   public void newGame(int level) {
