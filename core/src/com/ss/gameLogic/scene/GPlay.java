@@ -17,6 +17,7 @@ import com.ss.core.util.GScreen;
 import com.ss.core.util.GStage;
 import com.ss.core.util.GUI;
 import com.ss.gameLogic.controller.PlayController;
+import com.ss.gameLogic.model.BoardModel;
 import com.ss.gameLogic.objects.AniView;
 import com.ss.gameLogic.scene.ui.TimeBar;
 
@@ -24,7 +25,6 @@ public class GPlay extends GScreen {
     TextureAtlas playAtlas;
     GLayerGroup uiGroup;
     Group pauseGroup;
-    private int currentLevel = 0; //pref
 
     @Override
     public void dispose() {
@@ -112,12 +112,19 @@ public class GPlay extends GScreen {
         initUi();
         initParticle();
         PlayController.instance.init(this);
-        startGame(currentLevel);
+        if (BoardModel.loadLastBoardModel() == null){
+            PlayController.instance.newGame(0);
+            initTimebar();
+        }
+        else {
+            PlayController.instance.resume();
+            initTimebar();
+        }
+            ;
     }
 
     private void startGame(int level) {
-        PlayController.instance.newGame(level);
-        initTimebar();
+
     }
 
     @Override

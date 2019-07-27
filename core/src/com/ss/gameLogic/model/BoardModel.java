@@ -3,6 +3,7 @@ package com.ss.gameLogic.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Array;
+import com.ss.gameLogic.data.Level;
 import com.ss.gameLogic.model.util.D;
 import com.ss.gameLogic.model.util.Path;
 import com.ss.gameLogic.model.util.PathFinder;
@@ -21,14 +22,19 @@ public class BoardModel {
   private int col;
   private int numPair;
   private AniModel[][] anis;
-  private Array<SlicePartition> slicePartitions;
+  private int currentLevel = 0;
+  public float playTime = 360;
 
-  public BoardModel(int row, int col, int numPair) {
-    this.row = row;
-    this.col = col;
-    this.numPair = numPair;
+  public BoardModel(int level) { //call stack
+    this.currentLevel = level;
+    Level lv = Level.getLevelData(level);
+    this.row = lv.row;
+    this.col = lv.col;
+    this.numPair = lv.numPair;
     anis = new AniModel[row][col];
     currentBoardModel = this;
+    this.playTime = lv.time;
+    SlicePartition.initPartitions(level, anis); //session
   }
 
   public void removeAni(int row, int col){
@@ -42,16 +48,6 @@ public class BoardModel {
   }
   public static BoardModel getLastBoardModel(){ return currentBoardModel; }
   public AniModel[][] getArray() {return anis;}
-
-  public void newBoard() {
-    Array<Integer> indexList = initBoard();
-    int num = 0;
-
-    for (int i = 0; i < row; i++)
-      for (int j = 0; j < col; j++)
-        anis[i][j] = new AniModel(indexList.get(num++), i, j);
-
-  }
 
   private Array<Integer> initBoard() {
     int size = col*row;
@@ -139,6 +135,9 @@ public class BoardModel {
     pref.putInteger("col", board.col);
     pref.putInteger("row", board.row);
     pref.putInteger("numPair", board.numPair);
+    pref.putInteger("currentLevel", board.currentLevel);
+    pref.putFloat("playTime", board.playTime);
+
     for(int i=0;i<board.row;i++){
       for(int j=0;j<board.col;j++){
         int id = (board.anis[i][j]==null)?-1:board.anis[i][j].getId();
@@ -158,6 +157,13 @@ public class BoardModel {
       int col = pref.getInteger("col");
       int row = pref.getInteger("row");
       int numPair = pref.getInteger("numPair");
+      int currentLevel = pref.getInteger("currentLevel");
+      float playTime = pref.getFloat("playTime");
+
+      Level lv = Level.getLevelData(currentLevel);
+      if (col != lv.col || row != lv.row || numPair != lv.numPair) {
+        return null;
+      }
 
       int[][] resumeData = new int[row][col];
       for (int i = 0; i < row; i++) {
@@ -165,8 +171,10 @@ public class BoardModel {
           resumeData[i][j] = pref.getInteger("ani_" + i + "_" + j, -1);
         }
       }
-      BoardModel boardModel = new BoardModel(row, col, numPair);
-      boardModel.resumeBoard(resumeData);
+
+      BoardModel boardModel = new BoardModel(currentLevel);
+      boardModel.resumeBoard(resumeData, playTime);
+      BoardModel.currentBoardModel = boardModel;
       return boardModel;
     }
     catch(Exception e){
@@ -176,11 +184,25 @@ public class BoardModel {
     return null;
   }
 
-  public void resumeBoard(int[][] data){
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public void resumeBoard(int[][] data, float playTime){
+    this.playTime = playTime;
+
     for (int i = 0; i < row; i++)
       for (int j = 0; j < col; j++)
         if(data[i][j]!=-1)
           anis[i][j] = new AniModel(data[i][j], i, j);
         else anis[i][j] = null;
+  }
+
+  public void generateBoard() { //>< resumeBoard
+    Array<Integer> indexList = initBoard();
+    int num = 0;
+
+    for (int i = 0; i < row; i++)
+      for (int j = 0; j < col; j++)
+        anis[i][j] = new AniModel(indexList.get(num++), i, j);
+
   }
 }

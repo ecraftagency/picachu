@@ -11,11 +11,9 @@ import com.ss.core.exSprite.GShapeSprite;
 import com.ss.core.util.GLayer;
 import com.ss.core.util.GLayerGroup;
 import com.ss.core.util.GStage;
-import com.ss.gameLogic.data.Level;
 import com.ss.gameLogic.model.AniModel;
 import com.ss.gameLogic.model.BoardModel;
 import com.ss.gameLogic.model.util.Path;
-import com.ss.gameLogic.model.util.SlicePartition;
 import com.ss.gameLogic.objects.AniView;
 import com.ss.gameLogic.objects.BoardView;
 import com.ss.gameLogic.scene.GPlay;
@@ -35,7 +33,6 @@ public class PlayController implements IBoardEvent {
     this.screen = screen;
     this.playGroup = new GLayerGroup();
     GStage.addToLayer(GLayer.ui, instance.playGroup);
-    initTimer(10);
   }
 
   public void pause(boolean pause) {
@@ -43,9 +40,8 @@ public class PlayController implements IBoardEvent {
   }
 
   public void newGame(int level) {
-    Level lv = Level.getLevelData(level);
-    BoardModel bmodel = new BoardModel(lv.row, lv.col, lv.numPair);
-    bmodel.newBoard();
+    BoardModel bmodel = new BoardModel(level);
+    bmodel.generateBoard();
 
     boardView = new BoardView();
     playGroup.addActor(instance.boardView);
@@ -59,8 +55,7 @@ public class PlayController implements IBoardEvent {
         return true;
       }
     }));
-
-    SlicePartition.initPartitions(level, bmodel.getArray());
+    initTimer(BoardModel.getLastBoardModel().playTime);
   }
 
   public void getHint() {
@@ -82,8 +77,8 @@ public class PlayController implements IBoardEvent {
     playGroup.addAction(GSimpleAction.simpleAction(new GSimpleAction.ActInterface() {
       @Override
       public boolean act(float dt, Actor actor) {
-        playTime -= dt; //0.0016
-        if (playTime <= 0) {
+        BoardModel.getLastBoardModel().playTime -= dt;
+        if (BoardModel.getLastBoardModel().playTime <= 0) {
           timeOut();
           return true;
         }
@@ -111,6 +106,7 @@ public class PlayController implements IBoardEvent {
         return true;
       }
     }));
+    initTimer(BoardModel.getLastBoardModel().playTime);
   }
 
   public void animationPath(ArrayList<Path> path){

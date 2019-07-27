@@ -93,7 +93,7 @@ public class BoardView extends Group {
   }
 
   public void animationResumeGame(BoardModel model, final IBoardEvent listener, GSimpleAction animationFinished ){
-
+    
   }
 
 
